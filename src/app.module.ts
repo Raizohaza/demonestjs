@@ -4,10 +4,11 @@ import { AppService } from './app.service';
 import { ActorModule } from './actor/actor.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { Actor } from './actor/entities/actor.entity';
+import { FilmModule } from './film/film.module';
 @Module({
   imports: [
     ActorModule,
+    FilmModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: '127.0.0.1',
@@ -15,9 +16,9 @@ import { Actor } from './actor/entities/actor.entity';
       username: 'root',
       password: '',
       database: 'testactor',
-      entities: [Actor],
+      entities: [],
       synchronize: true,
-      // autoLoadEntities: true,
+      autoLoadEntities: true,
     }),
   ],
   controllers: [AppController],

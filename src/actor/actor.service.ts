@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Actor } from 'src/entities/Actor';
 import { Repository } from 'typeorm';
 import { CreateActorDto } from './dto/create-actor.dto';
 import { UpdateActorDto } from './dto/update-actor.dto';
-import { Actor } from './entities/actor.entity';
 
 @Injectable()
 export class ActorService {
@@ -16,7 +16,7 @@ export class ActorService {
       `SELECT actor_id FROM actor WHERE actor_id = ( SELECT MAX(actor_id) FROM actor)`,
     );
     return await this.actorRepo.insert({
-      actor_id: id[0].actor_id + 1,
+      actorId: id[0].actor_id + 1,
       ...createActorDto,
     });
   }
@@ -26,7 +26,7 @@ export class ActorService {
   }
 
   async findOne(id: number) {
-    return await this.actorRepo.findOne({ where: { actor_id: id } });
+    return await this.actorRepo.findOne({ where: { actorId: id } });
   }
 
   update(id: number, updateActorDto: UpdateActorDto) {
@@ -34,7 +34,7 @@ export class ActorService {
   }
 
   async remove(id: number) {
-    const actor = await this.actorRepo.findOne({ where: { actor_id: id } });
+    const actor = await this.actorRepo.findOne({ where: { actorId: id } });
     if (actor) {
       return await this.actorRepo.remove(actor);
     }
