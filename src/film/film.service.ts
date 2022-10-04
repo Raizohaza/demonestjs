@@ -9,14 +9,16 @@ import { UpdateFilmDto } from './dto/update-film.dto';
 export class FilmService {
   constructor(
     @InjectRepository(Film)
-    private filmsRepo: Repository<Film>,
+    private filmRepo: Repository<Film>,
   ) {}
-  create(createFilmDto: CreateFilmDto) {
-    return 'This action adds a new film';
+  async create(createFilmDto: CreateFilmDto) {
+    return await this.filmRepo.insert({
+      ...createFilmDto,
+    });
   }
 
   async findAll() {
-    return await this.filmsRepo.find();
+    return await this.filmRepo.find();
   }
 
   findOne(id: number) {
