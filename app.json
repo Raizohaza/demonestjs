@@ -19,11 +19,11 @@
         "quantity": 1
       }
     },
-    "image": "heroku/nodejs",
+    "image": "heroku/nestjs",
     "addons": ["heroku-mysql"],
     "buildpacks": [
       {
-        "url": "heroku/nodejs"
+        "url": "heroku/nestjs"
       }
     ]
   }
