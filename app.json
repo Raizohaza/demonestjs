@@ -20,7 +20,7 @@
       }
     },
     "image": "heroku/nodejs",
-    "addons": ["heroku-postgresql"],
+    "addons": ["heroku-mysql"],
     "buildpacks": [
       {
         "url": "heroku/nodejs"
