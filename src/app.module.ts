@@ -5,17 +5,19 @@ import { ActorModule } from './actor/actor.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { FilmModule } from './film/film.module';
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
+    ConfigModule,
     ActorModule,
     FilmModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: process.env.DATABASE_URL,
       port: 3306,
-      username: 'root',
-      password: '',
-      database: 'testactor',
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [],
       synchronize: false,
       autoLoadEntities: true,
