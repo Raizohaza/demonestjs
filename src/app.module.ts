@@ -19,7 +19,7 @@ import { ConfigModule } from '@nestjs/config';
       password: "aIVCvBshU3",
       database: "XkOMC1ODcV",
       entities: [],
-      synchronize: false,
+      synchronize: true,
       autoLoadEntities: true,
     }),
   ],
