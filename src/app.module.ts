@@ -6,8 +6,30 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { FilmModule } from './film/film.module';
 import { ConfigModule } from '@nestjs/config';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
+import * as path from 'path';
 @Module({
   imports: [
+    WinstonModule.forRoot({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json(),
+      ),
+      transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({
+          dirname: path.join(__dirname, './../log/debug/'), //path to where save loggin result
+          filename: 'debug.log', //name of file where will be saved logging result
+          level: 'debug',
+        }),
+        new winston.transports.File({
+          dirname: path.join(__dirname, './../log/info/'),
+          filename: 'info.log',
+          level: 'info',
+        }),
+      ],
+    }),
     ConfigModule.forRoot(),
     ActorModule,
     FilmModule,
