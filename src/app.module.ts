@@ -6,14 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { FilmModule } from './film/film.module';
 import { ConfigModule } from '@nestjs/config';
-import { truncate } from 'fs';
 @Module({
   imports: [
-    ConfigModule,
+    ConfigModule.forRoot(),
     ActorModule,
     FilmModule,
     TypeOrmModule.forRoot({
-      type: "mysql",
+      type: 'mysql',
       host: process.env.DATABASE_HOST,
       port: Number(process.env.DATABASE_PORT),
       username: process.env.DATABASE_USER,
@@ -21,7 +20,7 @@ import { truncate } from 'fs';
       database: process.env.DATABASE_NAME,
       entities: [],
       synchronize: false,
-      insecureAuth: true,
+      // insecureAuth: true,
       autoLoadEntities: true,
     }),
   ],
