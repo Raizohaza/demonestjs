@@ -6,17 +6,24 @@ import {
   Patch,
   Param,
   Delete,
+  Inject,
 } from '@nestjs/common';
 import { FilmService } from './film.service';
+import { Logger } from 'winston';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
 
 @Controller('film')
 export class FilmController {
-  constructor(private readonly filmService: FilmService) {}
+  constructor(
+    private readonly filmService: FilmService,
+    @Inject('winston')
+    private readonly logger: Logger,
+  ) {}
 
   @Post()
   create(@Body() createFilmDto: CreateFilmDto) {
+    this.logger.debug(createFilmDto);
     return this.filmService.create(createFilmDto);
   }
 

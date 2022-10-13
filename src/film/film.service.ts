@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Film } from 'src/entities/Film';
 import { Repository } from 'typeorm';
+import { Logger } from 'winston';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
 
@@ -10,14 +11,18 @@ export class FilmService {
   constructor(
     @InjectRepository(Film)
     private filmRepo: Repository<Film>,
+    @Inject('winston')
+    private readonly logger: Logger,
   ) {}
   async create(createFilmDto: CreateFilmDto) {
+    this.logger.info(createFilmDto);
     return await this.filmRepo.insert({
       ...createFilmDto,
     });
   }
 
   async findAll() {
+    this.logger.info('Returning suggestions...');
     return await this.filmRepo.find();
   }
 
