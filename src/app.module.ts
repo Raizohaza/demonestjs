@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ActorModule } from './actor/actor.module';
@@ -11,6 +11,8 @@ import { UsersModule } from './users/users.module';
 import * as winston from 'winston';
 import * as path from 'path';
 import { AuthModule } from './auth/auth.module';
+import { LoggerNestMiddleware } from './logger-nest.middleware';
+
 @Module({
   imports: [
     WinstonModule.forRoot({
@@ -55,4 +57,7 @@ import { AuthModule } from './auth/auth.module';
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {}
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggerNestMiddleware).forRoutes('*');
+  }
 }
