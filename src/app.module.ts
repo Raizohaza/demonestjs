@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 import { FilmModule } from './film/film.module';
 import { ConfigModule } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
+import { UsersModule } from './users/users.module';
 import * as winston from 'winston';
 import * as path from 'path';
 import { AuthModule } from './auth/auth.module';
