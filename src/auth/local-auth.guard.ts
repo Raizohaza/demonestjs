@@ -1,5 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable, CanActivate } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-
+import { Observable } from 'rxjs';
+import { LocalStrategy } from './helper/local.strategy';
 @Injectable()
-export class LocalAuthGuard extends AuthGuard('local') {}
+export class LocalAuthGuard extends AuthGuard('local') implements CanActivate {
+  constructor(stategy: LocalStrategy) {
+    super();
+    this.stategy = stategy;
+  }
+  stategy: LocalStrategy;
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+    const req = context.switchToHttp().getRequest();
+    const { username, password } = req.body;
+    if (!!username === true && !!password === true) {
+      return this.stategy.validate(username, password).then((data) => {
+        req['data'] = data;
+        return req;
+      });
+    }
+    return false;
+  }
+}
