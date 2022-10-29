@@ -7,11 +7,12 @@ import { DataSource } from 'typeorm';
 import { FilmModule } from './film/film.module';
 import { ConfigModule } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
-import { UsersModule } from './users/users.module';
 import * as winston from 'winston';
 import * as path from 'path';
 import { AuthModule } from './auth/auth.module';
 import { LoggerNestMiddleware } from './logger-nest.middleware';
+import { UserModule } from './user/user.module';
+import { User } from './entities/User';
 
 @Module({
   imports: [
@@ -44,13 +45,13 @@ import { LoggerNestMiddleware } from './logger-nest.middleware';
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [],
+      entities: [User],
       synchronize: false,
       // insecureAuth: true,
       autoLoadEntities: true,
     }),
     AuthModule,
-    UsersModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
