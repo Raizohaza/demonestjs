@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { LoggerNestMiddleware } from './logger-nest.middleware';
 import { UserModule } from './user/user.module';
 import { User } from './entities/User';
+import * as Joi from 'joi';
 
 @Module({
   imports: [
@@ -35,7 +36,13 @@ import { User } from './entities/User';
         }),
       ],
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      validationSchema: Joi.object({
+        JWT_SECRET: 'cAD4BZPAgF',
+        JWT_EXPIRATION_TIME: 'cAD4BZPAgF',
+      })
+    }
+    ),
     ActorModule,
     FilmModule,
     TypeOrmModule.forRoot({
@@ -57,7 +64,7 @@ import { User } from './entities/User';
   providers: [AppService],
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) {}
+  constructor(private dataSource: DataSource) { }
   configure(consumer: MiddlewareConsumer): void {
     consumer.apply(LoggerNestMiddleware).forRoutes('*');
   }

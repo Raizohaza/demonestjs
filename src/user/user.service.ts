@@ -4,6 +4,7 @@ import { User } from 'src/entities/User';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FindUserDto } from './dto/find-user.dto';
 import * as bcrypt from 'bcrypt';
 
 export type UserTest = any;
@@ -26,18 +27,6 @@ export class UserService {
     },
   ];
   async create(userData: CreateUserDto) {
-    userData.password = await bcrypt.hash(userData.password, 10);
-
-    //check existing user
-    const existingUser = await this.UserRepository
-      .createQueryBuilder('user')
-      .where('user.email = :email', { email: userData.email })
-      .getOne();
-
-    if (existingUser) {
-      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
-    }
-
     const newUser = await this.UserRepository.create(userData);
     await this.UserRepository.save(newUser);
     return newUser;
@@ -52,6 +41,13 @@ export class UserService {
   }
   async findOneByName(username: string): Promise<UserTest | undefined> {
     return this.users.find((user) => user.username === username);
+  }
+
+  async findOneByEmail(emailReq: string) {
+    return await this.UserRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email: emailReq })
+      .getOne();
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

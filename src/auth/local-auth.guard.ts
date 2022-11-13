@@ -13,9 +13,9 @@ export class LocalAuthGuard extends AuthGuard('local') implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     const req = context.switchToHttp().getRequest();
-    const { username, password } = req.body;
-    if (!!username === true && !!password === true) {
-      return this.stategy.validate(username, password).then((data) => {
+    const { email, password } = req.body;
+    if (!!email === true && !!password === true) {
+      return this.stategy.validate(email, password).then((data) => {
         req['data'] = data;
         return req;
       });
