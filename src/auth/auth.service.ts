@@ -1,11 +1,12 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { Response, } from 'express';
 import { UserService } from 'src/user/user.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import RegisterDto from './dto/register.dto';
 import LoginDto from './dto/login.dto';
+import { ErrorMessage, SuccesMessage, jwtConstants } from 'src/common/message';
+
 enum MySQLErrorCode {
   UniqueViolation = 'ER_DUP_ENTRY',
 }
@@ -30,47 +31,74 @@ export class AuthService {
     return null;
   }
 
-  public async register(registrationData: RegisterDto) {
+  public async register(registrationData: RegisterDto, response: Response) {
     const hashedPassword = await bcrypt.hash(registrationData.password, 10);
     try {
       const createdUser = await this.userService.create({
         ...registrationData,
         password: hashedPassword,
       });
+
       createdUser.password = undefined;
-      return createdUser;
+      return response.status(HttpStatus.OK).json({
+        code: HttpStatus.OK,
+        data: createdUser,
+        messages: SuccesMessage.MSG001
+      });
     } catch (error) {
       if (error?.code === MySQLErrorCode.UniqueViolation) {
-        throw new HttpException(
-          'User with that email already exists',
-          HttpStatus.BAD_REQUEST,
-        );
+        return response.status(HttpStatus.BAD_REQUEST).json({
+          code: HttpStatus.BAD_REQUEST,
+          data: {},
+          messages: ErrorMessage.ERR001
+        });
       }
-      throw new HttpException(
-        'Something went wrong',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        data: {},
+        messages: ErrorMessage.ERR002
+      });
     }
   }
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, response: Response) {
+    const cookie = await this.getCookieWithJwtToken(loginDto.email);
+    response.setHeader('Set-Cookie', cookie);
+    loginDto.password = undefined;
+
     const payload = { email: loginDto.email };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+
+    return response.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      data: { access_token: this.jwtService.sign(payload) },
+      messages: SuccesMessage.MSG002
+    });
+  }
+
+  async getProfile(req, response: Response) {
+    req.user.password = undefined;
+    return response.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      data: req.user,
+      message: SuccesMessage.MSG003,
+    });
+  }
+
+  async logout(response: Response) {
+    response.setHeader('Set-Cookie', this.getCookieForLogOut());
+    return response.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
+      message: SuccesMessage.MSG004
+    });
   }
 
   public getCookieWithJwtToken(email: string) {
     const payload: TokenPayload = { email };
     const token = this.jwtService.sign(payload);
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=30000`;
+    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${jwtConstants.TOKEN_EXP}`;
   }
 
   public getCookieForLogOut() {
     return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
-  }
-
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
   }
 }
